@@ -9,7 +9,6 @@ public class BrickGameManager : MonoBehaviour
     [SerializeField] GameObject mainPanel;
     [SerializeField] GameObject successPanel;
     [SerializeField] GameObject failPanel;
-    // [SerializeField] GameObject highestScoreText;
     [SerializeField] GameObject startText;
     [SerializeField] GameObject bricks;
     [SerializeField] GameObject weightlessWall;
@@ -49,7 +48,6 @@ public class BrickGameManager : MonoBehaviour
     private void Start()
     {
         mainPanel.SetActive(true);
-        // highestScoreText.SetActive(true);
         successPanel.SetActive(false);
         failPanel.SetActive(false);
         startText.SetActive(false);
@@ -60,7 +58,6 @@ public class BrickGameManager : MonoBehaviour
         bgmPlayer.clip = brickoutBgm;
         bgmPlayer.Play();
         mainPanel.SetActive(false);
-        // highestScoreText.SetActive(false);
         startText.SetActive(true);
         Invoke("ShutDownMainPanel", 1.5f);
         StartGame();
@@ -74,22 +71,25 @@ public class BrickGameManager : MonoBehaviour
     public void StartGame()
     {
         mainPanel.SetActive(false);
-        // highestScoreText.SetActive(false);
         successPanel.SetActive(false);
         failPanel.SetActive(false);
         bricks.SetActive(false);
-        if (bricksCloned != null)
+        
+        if (!ReferenceEquals(bricksCloned, null))
         {
             Destroy(bricksCloned);
         }
+        
         bricksCloned = Instantiate(bricks);
         bricksCloned.SetActive(true);
         isGameFinished = false;
-        InitializeIsGettingOut();
-        if (ball != null)
+        weightlessWall.GetComponent<WeightlessWall>().isGettingOut = true;
+
+        if (!ReferenceEquals(ball, null))
         {
             Destroy(ball);
         }
+        
         Invoke("SpawnBall", 3f);
     }
 
@@ -100,7 +100,7 @@ public class BrickGameManager : MonoBehaviour
 
     private void Update()
     {
-        if (isGameFinished == false)
+        if (!isGameFinished)
         {
             if (ball != null)
             {
@@ -112,6 +112,7 @@ public class BrickGameManager : MonoBehaviour
                     isGameFinished = true;
                 }
             }
+            
             if (bricksCloned.transform.childCount == 0)
             {
                 Destroy(ball);
@@ -128,10 +129,5 @@ public class BrickGameManager : MonoBehaviour
         ball.name = "Ball";
         Vector3 shootVelocity = userPoint.transform.position - ballSpawnPosition.transform.position;
         ball.gameObject.GetComponent<Rigidbody>().velocity = shootVelocity;
-    }
-
-    public void InitializeIsGettingOut()
-    {
-        weightlessWall.GetComponent<WeightlessWall>().isGettingOut = true;
     }
 }
